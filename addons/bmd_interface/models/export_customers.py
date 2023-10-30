@@ -1,23 +1,34 @@
+from odoo import models, api
 import csv
-from odoo import api, models
+import os
 
 
 class CustomerExport(models.TransientModel):
     _name = 'customer.export'
+    _description = 'Export Customers to CSV'
 
     @api.model
     def export_customers(self):
-        # Get customer data
-        customers = self.env['res.partner'].search([('customer', '=', True)])
 
-        # Specify the path for CSV
+        customers = self.env['res.partner'].search([('customer_rank', '>', 0)])
+
         path = "/path/to/export.csv"
 
-        # Write to CSV
-        with open(path, 'w', newline='') as csvfile:
+        directory = os.path.dirname(path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # Schreibe in die CSV-Datei
+        with open(path, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['name', 'email', 'phone']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
             for customer in customers:
-                writer.writerow({'name': customer.name, 'email': customer.email, 'phone': customer.phone})
+                writer.writerow({
+                    'name': customer.name,
+                    'email': customer.email,
+                    'phone': customer.phone
+                })
+
+        return True
