@@ -7,6 +7,7 @@ class CustomerExport(models.Model):
     _name = 'customer.export'
 
 
+
     @api.model
     def export_customers(self):
 
