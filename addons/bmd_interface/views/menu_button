@@ -11,7 +11,7 @@
             <field name="arch" type="xml">
                 <!-- Bottun hinzufügen -->
                 <xpath expr="//div[@class='o_cp_buttons']" position="inside">
-                    <button string="BMD-Export" type="object" class="btn btn-secondary" name="bmd_export"/>
+                    <button string="BMD-Export" type="object" class="btn btn-secondary" name="export_customers"/>
                 </xpath>
             </field>
         </record>

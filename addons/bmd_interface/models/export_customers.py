@@ -3,7 +3,7 @@ import csv
 import os
 
 
-class CustomerExport(models.TransientModel):
+class CustomerExport(models.Model):
     _name = 'customer.export'
     _description = 'Export Customers to CSV'
 
