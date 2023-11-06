@@ -3,9 +3,9 @@
     'version': '1.0',
     'author': 'It-fact',
     'website': 'https://it-fact.com',
-    'depends': ['base'],
+    'depends': ['base','account','base_accounting_kit'],
     'data': [
-        'views/menu_button.xml'
+        'views/button12.xml'
 
     ]
 }

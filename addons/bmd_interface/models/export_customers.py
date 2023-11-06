@@ -5,7 +5,7 @@ import os
 
 class CustomerExport(models.Model):
     _name = 'customer.export'
-    _description = 'Export Customers to CSV'
+
 
     @api.model
     def export_customers(self):
