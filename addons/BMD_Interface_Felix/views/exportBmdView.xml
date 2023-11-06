@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit the tree view where you want to add the button -->
+    <record id="view_move_line_tree_inherited" model="ir.ui.view">
+        <field name="name">account.move.line.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <!-- Use xpath to locate the position where you want to add the button -->
+            <xpath expr="//tree" position="inside">
+                <!-- Insert your button details here. Example: -->
+                <button name="export_bmd" type="object" string="BMD Export"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
