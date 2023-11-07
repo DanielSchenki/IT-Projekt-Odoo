@@ -5,9 +5,13 @@ import os
 
 class CustomerExport(models.Model):
     _name = 'customer.export'
+    _description = "Exportieren von Kunden"
 
 
 
+    def export_bmd(self):
+        print("==============> Generating csv Files for BMD export")
+        pass
     @api.model
     def export_customers(self):
 

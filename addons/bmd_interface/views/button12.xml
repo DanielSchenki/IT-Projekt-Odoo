@@ -1,22 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
-
         <record id="action_download_file" model="ir.actions.server">
             <field name="name">Download Datei</field>
-            <field name="model_id" ref="customer.export"/>
+            <field name="model_id" ref="base.model_ir_actions_server"/>
             <field name="state">code</field>
             <field name="code">
-                action = env['customer.export'].export_customers()
+                print('Hello World')
             </field>
         </record>
+        <record id="action_button" model="ir.actions.server">
+            <field name="name">Aktion für Button</field>
+            <field name="model_id" ref="base.model_ir_actions_server"/>
+            <field name="state">code</field>
+            <field name="code">
 
+            action = {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Benachrichtigung',
+                    'message': 'Button wurde gedrückt!',
+                    'sticky': False,
+                }
+                }
+            </field>
+        </record>
+        <record id="view_button_form" model="ir.ui.view">
+            <field name="name">button.view.form</field>
+            <field name="model">ir.actions.server</field>
+            <field name="arch" type="xml">
+                <form>
+                     <footer>
+                       <button string="Drück mich" type="object" name="action_button"/>
+                     </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_your_custom_action" model="ir.actions.act_window">
+            <field name="name">Öffne Button Ansicht</field>
+            <field name="res_model">ir.actions.server</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_button_form"/>
+            <field name="target">new</field>
+        </record>
 
         <menuitem id="menu_your_custom_menuitem"
                   name="Download Kunden"
                   parent="contacts.res_partner_menu_contacts"
-                  action="action_download_file"
+                  action="action_your_custom_action"
                   sequence="10" />
-
-    </data>
 </odoo>
