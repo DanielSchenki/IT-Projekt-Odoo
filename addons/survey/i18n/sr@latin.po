@@ -1308,7 +1308,7 @@ msgstr ""
 
 #. module: survey
 #: model:survey.label,value:survey.frow_2_7_4
-msgid "Running the configuration wizards is a good way to spare time"
+msgid "Running the configuration wizard is a good way to spare time"
 msgstr ""
 
 #. module: survey
@@ -1964,7 +1964,7 @@ msgstr ""
 
 #. module: survey
 #: model:survey.question,question:survey.feedback_2_7
-msgid "What do you think about configuration wizards?"
+msgid "What do you think about configuration wizard?"
 msgstr ""
 
 #. module: survey

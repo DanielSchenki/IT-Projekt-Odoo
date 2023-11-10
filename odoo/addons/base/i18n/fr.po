@@ -26055,9 +26055,9 @@ msgstr "Le nom de la société doit être unique !"
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.act_ir_actions_todo_form
 msgid ""
-"The configuration wizards are used to help you configure a new instance of "
+"The configuration wizard are used to help you configure a new instance of "
 "Odoo. They are launched during the installation of new modules, but you can "
-"choose to restart some wizards manually from this menu."
+"choose to restart some wizard manually from this menu."
 msgstr ""
 "Les assistants de configuration sont utilisés pour vous aider à configurer "
 "une nouvelle instance Odoo. Ils sont lancés lors de l'installation de "

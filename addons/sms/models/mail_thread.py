@@ -222,7 +222,7 @@ class MailThread(models.AbstractModel):
             if not info_partner_ids:
                 if info_number:
                     sms_numbers = [info_number] + (sms_numbers or [])
-                    # will send a falsy notification allowing to fix it through SMS wizards
+                    # will send a falsy notification allowing to fix it through SMS wizard
                 elif not sms_numbers:
                     sms_numbers = [False]
 

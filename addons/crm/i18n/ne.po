@@ -1963,7 +1963,7 @@ msgstr ""
 
 #. module: crm
 #: model:ir.model,name:crm.model_crm_partner_binding
-msgid "Handle partner binding or generation in CRM wizards."
+msgid "Handle partner binding or generation in CRM wizard."
 msgstr ""
 
 #. module: crm

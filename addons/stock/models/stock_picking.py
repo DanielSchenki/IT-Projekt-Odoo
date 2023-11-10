@@ -1085,7 +1085,7 @@ class Picking(models.Model):
 
         self.message_subscribe([self.env.user.partner_id.id])
 
-        # Run the pre-validation wizards. Processing a pre-validation wizard should work on the
+        # Run the pre-validation wizard. Processing a pre-validation wizard should work on the
         # moves and/or the context and never call `_action_done`.
         if not self.env.context.get('button_validate_picking_ids'):
             self = self.with_context(button_validate_picking_ids=self.ids)
@@ -1140,7 +1140,7 @@ class Picking(models.Model):
         return True
 
     def _should_show_transfers(self):
-        """Whether the different transfers should be displayed on the pre action done wizards."""
+        """Whether the different transfers should be displayed on the pre action done wizard."""
         return len(self) > 1
 
     def _get_without_quantities_error_message(self):

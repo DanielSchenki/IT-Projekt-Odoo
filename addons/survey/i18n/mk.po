@@ -1303,7 +1303,7 @@ msgstr "Редови на матрицата"
 
 #. module: survey
 #: model:survey.label,value:survey.frow_2_7_4
-msgid "Running the configuration wizards is a good way to spare time"
+msgid "Running the configuration wizard is a good way to spare time"
 msgstr ""
 "Стартувајќи го волшебникот за конфигурација е добар начин да заштедите време"
 
@@ -1939,7 +1939,7 @@ msgstr "Глас"
 
 #. module: survey
 #: model:survey.question,question:survey.feedback_2_7
-msgid "What do you think about configuration wizards?"
+msgid "What do you think about configuration wizard?"
 msgstr "Што мислите за волшебниците за конфигурација?"
 
 #. module: survey

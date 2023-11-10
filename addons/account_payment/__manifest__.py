@@ -20,9 +20,9 @@
         'views/payment_provider_views.xml',
         'views/payment_transaction_views.xml',
 
-        'wizards/account_payment_register_views.xml',
-        'wizards/payment_link_wizard_views.xml',
-        'wizards/payment_refund_wizard_views.xml',
+        'wizard/account_payment_register_views.xml',
+        'wizard/payment_link_wizard_views.xml',
+        'wizard/payment_refund_wizard_views.xml',
     ],
     'assets': {
         'web.assets_frontend': [

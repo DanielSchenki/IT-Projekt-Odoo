@@ -417,7 +417,7 @@ class StockQuant(models.Model):
             if quant.product_id.tracking in ['lot', 'serial'] and\
                     not quant.lot_id and quant.inventory_quantity != quant.quantity and not quant.quantity:
                 products_tracked_without_lot.append(quant.product_id.id)
-        # for some reason if multi-record, env.context doesn't pass to wizards...
+        # for some reason if multi-record, env.context doesn't pass to wizard...
         ctx = dict(self.env.context or {})
         ctx['default_quant_ids'] = self.ids
         quants_outdated = self.filtered(lambda quant: quant.is_outdated)

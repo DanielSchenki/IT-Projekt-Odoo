@@ -156,7 +156,7 @@ class TestPurchaseRequisition(TestPurchaseRequisitionCommon):
         self.assertEqual(new_si.purchase_requisition_id, requisition_blanket, 'the blanket order is not linked to the supplier info')
 
     def test_07_alternative_purchases_wizards(self):
-        """Directly link POs to each other as 'Alternatives': check that wizards and
+        """Directly link POs to each other as 'Alternatives': check that wizard and
         their flows correctly work."""
         orig_po = self.env['purchase.order'].create({
             'partner_id': self.res_partner_1.id,

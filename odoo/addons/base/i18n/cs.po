@@ -23584,9 +23584,9 @@ msgstr "Název společnosti musí být jedinečný!"
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.act_ir_actions_todo_form
 msgid ""
-"The configuration wizards are used to help you configure a new instance of "
+"The configuration wizard are used to help you configure a new instance of "
 "Odoo. They are launched during the installation of new modules, but you can "
-"choose to restart some wizards manually from this menu."
+"choose to restart some wizard manually from this menu."
 msgstr ""
 "Konfigurační průvodci se používají ke konfiguraci nové instance Odoo. "
 "Spouští se během instalace nových modulů, ale můžete z tohoto menu ručně "

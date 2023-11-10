@@ -568,7 +568,7 @@ class TestMrpOrder(TestMrpCommon):
     def test_product_produce_2(self):
         """ Checks that, for a BOM where one of the components is tracked by serial number and the
         other is not tracked, when creating a manufacturing order for two finished products and
-        reserving, the produce wizards proposes the corrects lines when producing one at a time.
+        reserving, the produce wizard proposes the corrects lines when producing one at a time.
         """
         self.stock_location = self.env.ref('stock.stock_location_stock')
         mo, bom, p_final, p1, p2 = self.generate_mo(tracking_base_1='serial', qty_base_1=1, qty_final=2)
@@ -1105,7 +1105,7 @@ class TestMrpOrder(TestMrpCommon):
 
     def test_product_produce_11(self):
         """ Checks that, for a BOM with two components, when creating a manufacturing order for one
-        finished products and without reserving, the produce wizards proposes the corrects lines
+        finished products and without reserving, the produce wizard proposes the corrects lines
         even if we change the quantity to produce multiple times.
         """
         self.stock_location = self.env.ref('stock.stock_location_stock')

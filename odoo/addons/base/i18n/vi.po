@@ -25923,9 +25923,9 @@ msgstr "Tên công ty phải là duy nhất!"
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.act_ir_actions_todo_form
 msgid ""
-"The configuration wizards are used to help you configure a new instance of "
+"The configuration wizard are used to help you configure a new instance of "
 "Odoo. They are launched during the installation of new modules, but you can "
-"choose to restart some wizards manually from this menu."
+"choose to restart some wizard manually from this menu."
 msgstr ""
 "Trình cấu hình được sử dụng để giúp bạn cấu hình phiên bản mới của Odoo. "
 "Chúng được khởi chạy trong quá trình cài đặt các phân hệ mới, nhưng bạn có "

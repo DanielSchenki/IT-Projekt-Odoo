@@ -857,7 +857,7 @@ msgstr ""
 
 #. module: mrp
 #: model:ir.model,name:mrp.model_mrp_abstract_workorder
-msgid "Common code between produce wizards and workorders."
+msgid "Common code between produce wizard and workorders."
 msgstr ""
 
 #. module: mrp

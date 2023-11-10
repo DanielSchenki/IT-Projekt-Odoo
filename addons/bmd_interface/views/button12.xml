@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<odoo>
-    <menuitem id="menu_your_custom_menuitem"
-                  name="Download Kunden"
-                  parent="contacts.res_partner_menu_contacts"
-                  action="action_your_custom_action"
-                  sequence="10" />
-</odoo>

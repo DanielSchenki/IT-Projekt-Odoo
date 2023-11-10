@@ -3782,7 +3782,7 @@ var FieldReference = FieldMany2One.extend({
      * Apply the model contained in the option model_field
      * and re-initialize the record if the model change.
      * @param {boolean} initRecord :true, re-initialize the record if the model changes.
-     *                              Necessary for wizards.
+     *                              Necessary for wizard.
      */
     _applyModelField: function (initRecord) {
         let resourceRef = this.record.specialData[this.name];

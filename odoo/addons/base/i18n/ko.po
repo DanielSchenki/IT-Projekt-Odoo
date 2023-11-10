@@ -25500,9 +25500,9 @@ msgstr "회사명은 유일해야 합니다 !"
 #. module: base
 #: model_terms:ir.actions.act_window,help:base.act_ir_actions_todo_form
 msgid ""
-"The configuration wizards are used to help you configure a new instance of "
+"The configuration wizard are used to help you configure a new instance of "
 "Odoo. They are launched during the installation of new modules, but you can "
-"choose to restart some wizards manually from this menu."
+"choose to restart some wizard manually from this menu."
 msgstr ""
 "구성 마법사는 새로운 Odoo 인스턴스를 설정하는 데 도움이 됩니다. 새 모듈이 설치되면 마법사가 시작되지만 이 메뉴에서 수동으로 일부 "
 "마법사를 다시 시작할 수도 있습니다."

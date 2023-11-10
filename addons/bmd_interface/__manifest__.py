@@ -10,9 +10,9 @@
         Export von Daten für BMD
     """,
     'sequence': '1',
-    'depends': ['base','account','base_accounting_kit'],
+    'depends': ['base','account'],
     'data': [
-        'views/button12.xml'
+        'wizard/bmd_export.xml'
 
     ]
 }

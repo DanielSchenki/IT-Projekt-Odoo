@@ -1319,7 +1319,7 @@ msgstr "Filas de la Matriz"
 
 #. module: survey
 #: model:survey.label,value:survey.frow_2_7_4
-msgid "Running the configuration wizards is a good way to spare time"
+msgid "Running the configuration wizard is a good way to spare time"
 msgstr ""
 "Ejecutar los asistentes de configuración es una buena forma de ahorrar tiempo"
 
@@ -1959,7 +1959,7 @@ msgstr "Votar"
 
 #. module: survey
 #: model:survey.question,question:survey.feedback_2_7
-msgid "What do you think about configuration wizards?"
+msgid "What do you think about configuration wizard?"
 msgstr "Qué piensa acerca de los asistentes de configuración?"
 
 #. module: survey

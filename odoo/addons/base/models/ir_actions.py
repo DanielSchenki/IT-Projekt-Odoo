@@ -820,7 +820,7 @@ class IrActionsTodo(models.Model):
         if ctx.get('res_id'):
             result['res_id'] = ctx.pop('res_id')
 
-        # disable log for automatic wizards
+        # disable log for automatic wizard
         ctx['disable_log'] = True
 
         result['context'] = ctx
