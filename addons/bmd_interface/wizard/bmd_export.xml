@@ -5,8 +5,8 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="company_id" invisible="1"/>
-                    <field name="period_date"/>
+                    <field name="period_date_from"/>
+                    <field name="period_date_to"/>
                 </group>
                 <footer>
                     <button string="Export" name="execute" type="object" class="btn-primary"/>
