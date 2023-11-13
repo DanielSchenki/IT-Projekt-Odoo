@@ -1,6 +1,7 @@
 import csv
 import tkinter as tk
 from tkinter import filedialog
+import os
 import subprocess
 
 from odoo import models, fields, api
@@ -46,6 +47,33 @@ class AccountBmdExport(models.TransientModel):
 
         return True
 
+    @api.model
+    def export_customers(self):
+
+        customers = self.env['res.partner'].search([('customer_rank', '>', 0)])
+
+        path = "/path/to/export.csv"
+
+        directory = os.path.dirname(path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # Schreibe in die CSV-Datei
+        with open(path, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['name', 'email', 'phone']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for customer in customers:
+                writer.writerow({
+                    'name': customer.name,
+                    'email': customer.email,
+                    'phone': customer.phone
+                })
+
+        return True
+
     def execute(self):
         self.export_account()
+        #self.export_customers()
         return True
