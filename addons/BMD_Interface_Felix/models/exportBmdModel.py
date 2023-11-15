@@ -9,15 +9,51 @@ class exportBmdModel(models.Model):
 
     def export_bmd(self):
         print("==============> Generating csv Files for BMD export")
+        journal_items = self.env['account.move.line'].search([])
+        result_data = []
+        for line in journal_items:
+            print(line)
+            konto = line.account_id.code
+            '''gkonto = line.account_id.code
+            belegnr = line.move_id.name
+            belegdatum = line.move_id.date
+            steuercode = line.tax_ids.name
+            buchcode = line.move_id.name
+            betrag = line.debit
+            prozent = line.tax_ids.amount
+            steuer = line.tax_ids.amount
+            text = line.name
+            zziel = line.move_id.name
+            skontopz = line.move_id.name
+            skontotage = line.move_id.name
+            result_data.append({
+                'Konto': konto,
+                'GKonto': gkonto,
+                'Belegnr': belegnr,
+                'Belegdatum': belegdatum,
+                'Steuercode': steuercode,
+                'Buchcode': buchcode,
+                'Betrag': betrag,
+                'Prozent': prozent,
+                'Steuer': steuer,
+                'Text': text,
+                'Zziel': zziel,
+                'Skontopz': skontopz,
+                'Skontotage': skontotage
+            })
+            '''
         pass
 
     @api.model
     def export_journal_items(self):
         # Get all journal items
-        journal_items = self.env['account.move.line'].search([('move_id', '>', 0)])
+        print("==============> Generating csv Files for BMD export")
+        #journal_items = self.env['account.move.line'].search([('move_id', '>', 0)])
+
+        result_data = []
 
         #save every needed field in a variable
-        for line in journal_items:   #TODO Correct the fields
+        '''for line in journal_items:   #TODO Correct the fields
             konto = line.account_id.code
             gkonto = line.account_id.code
             belegnr = line.move_id.name
@@ -40,9 +76,9 @@ class exportBmdModel(models.Model):
 
         # Write into a CSV file the following fields: konto, gkonto, belegnr, belegdatum, steuercode, buchcode, betrag, prozent, steuer, text, zziel, skontopz, skontotage
 
+'''
 
 
 
-
-        return True
+        pass
 
