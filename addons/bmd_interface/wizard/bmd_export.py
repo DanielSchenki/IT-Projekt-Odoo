@@ -14,6 +14,9 @@ class AccountBmdExport(models.TransientModel):
     period_date_from = fields.Date(string="Von:", required=True)
     period_date_to = fields.Date(string="Bis:", required=True)
 
+    path = fields.Char(string="Pfad:", required=True)
+
+
     @api.model
     def export_account(self):
         accounts = self.env['account.account'].search([])
@@ -31,8 +34,12 @@ class AccountBmdExport(models.TransientModel):
         # Create a Tkinter window
         window = tk.Tk()
 
-        # Prompt the user to choose the save path
-        save_path = filedialog.asksaveasfilename(defaultextension='.csv')
+
+        #Angepasst von mir an die Allgemeine Directory!
+        save_path = self.path + '/Konten.csv'
+        directory = os.path.dirname(save_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
         # Write the data to the CSV file
         with open(save_path, 'w', newline='', encoding='utf-8') as csvfile:
@@ -48,32 +55,40 @@ class AccountBmdExport(models.TransientModel):
         return True
 
     @api.model
+    def selectPath(self):
+        print("selectPath")
+        self.path = filedialog.askdirectory()
+
+
+    @api.model
     def export_customers(self):
 
-        customers = self.env['res.partner'].search([('customer_rank', '>', 0)])
+        customers = self.env['res.partner'].search([])
+        print(customers)
 
-        path = "/path/to/export.csv"
-
-        directory = os.path.dirname(path)
+        path1= self.path + '/Kunden.csv'
+        directory = os.path.dirname(path1)
         if not os.path.exists(directory):
             os.makedirs(directory)
 
+
         # Schreibe in die CSV-Datei
-        with open(path, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['name', 'email', 'phone']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        with open(path1, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['Name', 'E-Mail', 'Phone']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
             for customer in customers:
                 writer.writerow({
-                    'name': customer.name,
-                    'email': customer.email,
-                    'phone': customer.phone
+                    'Name': customer.name,
+                    'E-Mail': customer.email,
+                    'Phone': customer.phone
                 })
 
         return True
 
     def execute(self):
+        self.selectPath()
         self.export_account()
-        #self.export_customers()
+        self.export_customers()
         return True
