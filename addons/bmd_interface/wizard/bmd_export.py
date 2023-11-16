@@ -14,7 +14,7 @@ class AccountBmdExport(models.TransientModel):
     period_date_from = fields.Date(string="Von:", required=True)
     period_date_to = fields.Date(string="Bis:", required=True)
 
-    path = fields.Char(string="Pfad:", required=True)
+    path = fields.Char(string="Pfad:", required=False)
 
 
     @api.model
