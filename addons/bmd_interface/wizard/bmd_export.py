@@ -56,8 +56,10 @@ class AccountBmdExport(models.TransientModel):
 
     @api.model
     def selectPath(self):
+        window = tk.Tk()
         print("selectPath")
         self.path = filedialog.askdirectory()
+        window.destroy()
 
 
     @api.model
@@ -74,7 +76,7 @@ class AccountBmdExport(models.TransientModel):
 
         # Schreibe in die CSV-Datei
         with open(path1, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['Name', 'E-Mail', 'Phone']
+            fieldnames = ['Name', 'E-Mail', 'Phone','Ort','Straße','PLZ']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
@@ -82,7 +84,10 @@ class AccountBmdExport(models.TransientModel):
                 writer.writerow({
                     'Name': customer.name,
                     'E-Mail': customer.email,
-                    'Phone': customer.phone
+                    'Phone': customer.phone,
+                    'Ort': customer.city,
+                    'Straße': customer.street,
+                    'PLZ': customer.zip
                 })
 
         return True
