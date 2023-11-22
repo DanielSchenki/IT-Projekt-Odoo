@@ -12,7 +12,7 @@
     'sequence': '1',
     'depends': ['base','account'],
     'data': [
-        'wizard/bmd_export.xml'
-
+        'wizard/bmd_export.xml',
+        'views/error_popup_template.xml'
     ]
 }

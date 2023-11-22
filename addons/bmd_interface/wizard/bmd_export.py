@@ -24,12 +24,25 @@ class AccountBmdExport(models.TransientModel):
         result_data = []
         for acc in accounts:
             for tax in acc.tax_ids:
+                kontoart_mapping = {
+                    'asset': 1,
+                    'equity': 2,
+                    'liability': 2,
+                    'expense': 3,
+                    'income': 4
+                }
+                kontoart = kontoart_mapping.get(acc.internal_group, '')
                 result_data.append({
                     'Konto-Nr': acc.code,
                     'Bezeichnung': acc.name,
                     'Ustcode': tax.tax_group_id.id if tax.tax_group_id else '',
                     'USTPz': tax.amount,
+                    'Kontoart': kontoart
                 })
+
+        # if len(accounts) != len(result_data):
+        #     raise Warning('Steuerklassen sind nicht für alle Sachkonten gepflegt')
+        #
 
         # Create a Tkinter window
         window = tk.Tk()
@@ -43,7 +56,7 @@ class AccountBmdExport(models.TransientModel):
 
         # Write the data to the CSV file
         with open(save_path, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['Konto-Nr', 'Bezeichnung', 'Ustcode', 'USTPz']
+            fieldnames = ['Konto-Nr', 'Bezeichnung', 'Ustcode', 'USTPz', 'Kontoart']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
