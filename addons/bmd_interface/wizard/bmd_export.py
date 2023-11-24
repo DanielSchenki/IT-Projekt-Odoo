@@ -79,6 +79,8 @@ class AccountBmdExport(models.TransientModel):
     def export_customers(self):
 
         customers = self.env['res.partner'].search([])
+        #customers = self.env['res.partner'].search([('property_account_receivable_id', '!=', False)])
+
         print(customers)
 
         path1= self.path + '/Kunden.csv'
@@ -89,18 +91,25 @@ class AccountBmdExport(models.TransientModel):
 
         # Schreibe in die CSV-Datei
         with open(path1, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['Name', 'E-Mail', 'Phone','Ort','Straße','PLZ']
+            fieldnames = ['Konto-Nr','Name','Straße','PLZ','Ort','Land','UID-Nummer', 'E-Mail','Webseite', 'Phone','IBAN','Zahlungsziel','Skonto','Skontotage']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
             for customer in customers:
                 writer.writerow({
-                    'Name': customer.name,
-                    'E-Mail': customer.email,
-                    'Phone': customer.phone,
-                    'Ort': customer.city,
-                    'Straße': customer.street,
-                    'PLZ': customer.zip
+                    'Konto-Nr': customer.property_account_receivable_id.code if customer.property_account_receivable_id else '',
+                    'Name': customer.name if customer.name else '',
+                    'E-Mail': customer.email if customer.email else '',
+                    'Phone': customer.phone if customer.phone else '',
+                    'Ort': customer.city if customer.city else '',
+                    'Straße': customer.street if customer.street else '',
+                    'PLZ': customer.zip if customer.zip else '',
+                    'Webseite': customer.website if customer.website else '',
+                    'UID-Nummer': customer.vat if customer.vat else '',
+                    'Land': customer.state_id.code if customer.state_id else '',
+
+
+
                 })
 
         return True
