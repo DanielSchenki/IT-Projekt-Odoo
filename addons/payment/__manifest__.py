@@ -23,8 +23,8 @@
         'security/ir.model.access.csv',
         'security/payment_security.xml',
 
-        'wizard/payment_link_wizard_views.xml',
-        'wizard/payment_onboarding_views.xml',
+        'wizards/payment_link_wizard_views.xml',
+        'wizards/payment_onboarding_views.xml',
     ],
     'demo': [
         'data/payment_demo.xml',

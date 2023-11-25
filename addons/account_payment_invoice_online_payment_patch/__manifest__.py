@@ -10,7 +10,7 @@
 
         'views/account_portal_templates.xml',
 
-        'wizard/res_config_settings_views.xml',
+        'wizards/res_config_settings_views.xml',
     ],
     'license': 'LGPL-3',
 }

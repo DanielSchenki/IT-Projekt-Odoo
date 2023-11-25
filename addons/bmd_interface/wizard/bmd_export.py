@@ -83,7 +83,7 @@ class AccountBmdExport(models.TransientModel):
 
         print(customers)
 
-        path1= self.path + '/Kunden.csv'
+        path1= self.path + '/Personenkonten.csv'
         directory = os.path.dirname(path1)
         if not os.path.exists(directory):
             os.makedirs(directory)
