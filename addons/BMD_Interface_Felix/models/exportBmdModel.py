@@ -19,26 +19,36 @@ class exportBmdModel(models.Model):
         journal_items = self.env['account.move.line'].search([])
         result_data = []
         for line in journal_items:
-            print(line)
+            #print(line)
             konto = line.account_id.code
             prozent = line.tax_ids.amount
             steuer = line.price_total - line.price_subtotal
             belegdatum = date_formatter(line.move_id.date)
             belegnr = line.move_id.name
             text = line.name
+            '''steuercode_before_cut = line.tax_ids.name'''
+            #Test String
+            steuercode_before_cut = "UST_056 Tax invoiced accepted (§ 11 Abs. 12 und 14, § 16 Abs. 2 sowie gemäß Art. 7 Abs. 4) BMDSC043"
+            print(steuercode_before_cut)
+            code_digits = steuercode_before_cut[-3:]
+            print(code_digits)
+            steuercode = int(code_digits)
+            print(steuercode)
+            if line.debit > 0:
+                buchcode = 1
+            else:
+                buchcode = 2
 
-            '''gkonto = line.account_id.code
-            belegnr = line.move_id.name
-            belegdatum = line.move_id.date
-            steuercode = line.tax_ids.name
-            buchcode = line.move_id.name
-            betrag = line.debit
-            prozent = line.tax_ids.amount
-            steuer = line.tax_ids.amount
-            text = line.name
-            zziel = line.move_id.name
-            skontopz = line.move_id.name
-            skontotage = line.move_id.name
+
+            #TODO: Add the correct values for the following fields
+            satzart = 0
+            gkonto = 4000
+            buchsymbol = "AR"
+            betrag = line.price_total
+            kost = 10
+            filiale = ""
+
+
             result_data.append({
                 'Konto': konto,
                 'GKonto': gkonto,
@@ -50,12 +60,15 @@ class exportBmdModel(models.Model):
                 'Prozent': prozent,
                 'Steuer': steuer,
                 'Text': text,
-                'Zziel': zziel,
-                'Skontopz': skontopz,
-                'Skontotage': skontotage
+                'Satzart': satzart,
+                'Buchsymbol': buchsymbol,
+                'Kost': kost,
+                'Filiale': filiale
             })
-            '''
+
         pass
+
+
 
     @api.model
     def export_journal_items(self):
