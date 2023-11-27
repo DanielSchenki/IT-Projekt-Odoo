@@ -49,7 +49,7 @@ class AccountBmdExport(models.TransientModel):
 
 
         #Angepasst von mir an die Allgemeine Directory!
-        save_path = self.path + '/Konten.csv'
+        save_path = self.path + '/Sachkonten.csv'
         directory = os.path.dirname(save_path)
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -114,8 +114,84 @@ class AccountBmdExport(models.TransientModel):
 
         return True
 
+    def export_buchungszeilen(self):
+        print("==============> Generating csv Files for BMD export")
+
+        # date formatter from yyyy-mm-dd to dd.mm.yyyy
+        def date_formatter(date):
+            #date = date.split("-")
+            #return date[2] + "." + date[1] + "." + date[0]
+            return date.strftime('%d.%m.%Y')
+
+        journal_items = self.env['account.move.line'].search([])
+        result_data = []
+        for line in journal_items:
+            #print(line)
+            konto = line.account_id.code
+            prozent = line.tax_ids.amount
+            steuer = line.price_total - line.price_subtotal
+            belegdatum = date_formatter(line.move_id.date)
+            belegnr = line.move_id.name
+            text = line.name
+            '''steuercode_before_cut = line.tax_ids.name'''
+            #Test String
+            steuercode_before_cut = "UST_056 Tax invoiced accepted (§ 11 Abs. 12 und 14, § 16 Abs. 2 sowie gemäß Art. 7 Abs. 4) BMDSC043"
+            print(steuercode_before_cut)
+            code_digits = steuercode_before_cut[-3:]
+            print(code_digits)
+            steuercode = int(code_digits)
+            print(steuercode)
+            if line.debit > 0:
+                buchcode = 1
+            else:
+                buchcode = 2
+
+
+            #TODO: Add the correct values for the following fields
+            satzart = 0
+            gkonto = 4000
+            buchsymbol = "AR"
+            betrag = line.price_total
+            kost = 10
+            filiale = ""
+
+
+            result_data.append({
+                'Konto': konto,
+                'GKonto': gkonto,
+                'Belegnr': belegnr,
+                'Belegdatum': belegdatum,
+                'Steuercode': steuercode,
+                'Buchcode': buchcode,
+                'Betrag': betrag,
+                'Prozent': prozent,
+                'Steuer': steuer,
+                'Text': text,
+                'Satzart': satzart,
+                'Buchsymbol': buchsymbol,
+                'Kost': kost,
+                'Filiale': filiale
+            })
+
+        save_path = self.path + '/Buchungszeilen.csv'
+        directory = os.path.dirname(save_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        with open(save_path, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['Konto', 'GKonto', 'Belegnr', 'Belegdatum', 'Steuercode', 'Buchcode', 'Betrag', 'Prozent', 'Steuer', 'Text', 'Satzart', 'Buchsymbol', 'Kost', 'Filiale']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+
+            writer.writeheader()
+            for row in result_data:
+                writer.writerow(row)
+
+        print("==============> Done")
+
+
     def execute(self):
         self.selectPath()
         self.export_account()
         self.export_customers()
+        self.export_buchungszeilen()
         return True
