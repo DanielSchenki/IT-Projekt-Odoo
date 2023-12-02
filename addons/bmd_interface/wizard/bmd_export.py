@@ -2,7 +2,6 @@ import csv
 import tkinter as tk
 from tkinter import filedialog
 import os
-import subprocess
 
 from odoo import models, fields, api
 
@@ -23,7 +22,7 @@ class AccountBmdExport(models.TransientModel):
 
         result_data = []
         for acc in accounts:
-            for tax in acc.tax_ids:
+            if not acc.tax_ids:
                 kontoart_mapping = {
                     'asset': 1,
                     'equity': 2,
@@ -35,10 +34,27 @@ class AccountBmdExport(models.TransientModel):
                 result_data.append({
                     'Konto-Nr': acc.code,
                     'Bezeichnung': acc.name,
-                    'Ustcode': tax.tax_group_id.id if tax.tax_group_id else '',
-                    'USTPz': tax.amount,
+                    'Ustcode': '',
+                    'USTPz': '',
                     'Kontoart': kontoart
                 })
+            else:
+                for tax in acc.tax_ids:
+                    kontoart_mapping = {
+                        'asset': 1,
+                        'equity': 2,
+                        'liability': 2,
+                        'expense': 3,
+                        'income': 4
+                    }
+                    kontoart = kontoart_mapping.get(acc.internal_group, '')
+                    result_data.append({
+                        'Konto-Nr': acc.code,
+                        'Bezeichnung': acc.name,
+                        'Ustcode': tax.tax_group_id.id if tax.tax_group_id else '',
+                        'USTPz': tax.amount,
+                        'Kontoart': kontoart
+                    })
 
         # if len(accounts) != len(result_data):
         #     raise Warning('Steuerklassen sind nicht für alle Sachkonten gepflegt')
