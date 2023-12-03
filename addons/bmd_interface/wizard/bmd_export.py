@@ -135,58 +135,78 @@ class AccountBmdExport(models.TransientModel):
 
         # date formatter from yyyy-mm-dd to dd.mm.yyyy
         def date_formatter(date):
-            #date = date.split("-")
-            #return date[2] + "." + date[1] + "." + date[0]
             return date.strftime('%d.%m.%Y')
 
         journal_items = self.env['account.move.line'].search([])
         result_data = []
         for line in journal_items:
-            #print(line)
+            # print(line)
             konto = line.account_id.code
             prozent = line.tax_ids.amount
             steuer = line.price_total - line.price_subtotal
-            belegdatum = date_formatter(line.move_id.date)
+            if line.move_id.invoice_date == False:
+                belegdatum = ""
+            else:
+                belegdatum = date_formatter(line.move_id.date)
+
+            if line.move_id.date == False:
+                buchungsdatum = ""
+            else:
+                buchungsdatum = date_formatter(line.move_id.date)
             belegnr = line.move_id.name
             text = line.name
-            '''steuercode_before_cut = line.tax_ids.name'''
-            #Test String
-            steuercode_before_cut = "UST_056 Tax invoiced accepted (§ 11 Abs. 12 und 14, § 16 Abs. 2 sowie gemäß Art. 7 Abs. 4) BMDSC043"
-            print(steuercode_before_cut)
-            code_digits = steuercode_before_cut[-3:]
-            print(code_digits)
-            steuercode = int(code_digits)
-            print(steuercode)
+            if steuer != 0 and line.tax_ids.name != False:
+                steuercode_before_cut = line.tax_ids.name
+                # Test String
+                # steuercode_before_cut = "UST_056 Tax invoiced accepted (§ 11 Abs. 12 und 14, § 16 Abs. 2 sowie gemäß Art. 7 Abs. 4) BMDSC043"
+                pattern = r"BMDSC\d{3}$"
+                if re.search(pattern, steuercode_before_cut):
+                    steuercode = int(steuercode_before_cut[-3:])
+                else:
+                    steuercode = "002"
+            else:
+                steuercode = "002"
+
             if line.debit > 0:
                 buchcode = 1
+                habenBuchung = False
             else:
                 buchcode = 2
+                habenBuchung = True
 
+            if habenBuchung:
+                betrag = -line.credit  # Haben Buchungen müssen negativ sein
+                for invoice_line in line.move_id.invoice_line_ids:  # runs through all invoice lines to find the right "Gegenkonto"
+                    if invoice_line.debit > 0:
+                        gkonto = invoice_line.account_id.code
+            else:
+                betrag = line.debit
+                for invoice_line in line.move_id.invoice_line_ids:  # runs through all invoice lines to find the right "Gegenkonto"
+                    if invoice_line.credit > 0:
+                        gkonto = invoice_line.account_id.code
 
-            #TODO: Add the correct values for the following fields
+            # TODO: Add the correct values for the following fields
             satzart = 0
-            gkonto = 4000
-            buchsymbol = "AR"
-            betrag = line.price_total
+            buchsymbol = "ER"
             kost = 10
             filiale = ""
 
-
             result_data.append({
-                'Konto': konto,
-                'GKonto': gkonto,
-                'Belegnr': belegnr,
-                'Belegdatum': belegdatum,
-                'Steuercode': steuercode,
-                'Buchcode': buchcode,
-                'Betrag': betrag,
-                'Prozent': prozent,
-                'Steuer': steuer,
-                'Text': text,
-                'Satzart': satzart,
-                'Buchsymbol': buchsymbol,
-                'Kost': kost,
-                'Filiale': filiale
+                'satzart': satzart,
+                'konto': konto,
+                'gKonto': gkonto,
+                'belegnr': belegnr,
+                'belegdatum': belegdatum,
+                'steuercode': steuercode,
+                'buchcode': buchcode,
+                'betrag': betrag,
+                'prozent': prozent,
+                'steuer': steuer,
+                'text': text,
+                'satzart': satzart,
+                'buchsymbol': buchsymbol,
+                'kost': kost,
+                'filiale': filiale
             })
 
         save_path = self.path + '/Buchungszeilen.csv'
@@ -195,7 +215,8 @@ class AccountBmdExport(models.TransientModel):
             os.makedirs(directory)
 
         with open(save_path, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['Konto', 'GKonto', 'Belegnr', 'Belegdatum', 'Steuercode', 'Buchcode', 'Betrag', 'Prozent', 'Steuer', 'Text', 'Satzart', 'Buchsymbol', 'Kost', 'Filiale']
+            fieldnames = ['satzart', 'konto', 'gKonto', 'belegnr', 'belegdatum', 'steuercode', 'buchcode', 'betrag',
+                          'prozent', 'steuer', 'text', 'satzart', 'buchsymbol', 'kost', 'filiale']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
