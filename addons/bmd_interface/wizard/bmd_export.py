@@ -1,4 +1,5 @@
 import csv
+import re
 import tkinter as tk
 from tkinter import filedialog
 import os
@@ -92,26 +93,25 @@ class AccountBmdExport(models.TransientModel):
 
 
     @api.model
+    @api.model
     def export_customers(self):
 
         customers = self.env['res.partner'].search([])
-        #customers = self.env['res.partner'].search([('property_account_receivable_id', '!=', False)])
 
-        print(customers)
-
-        path1= self.path + '/Personenkonten.csv'
+        path1 = self.path + '/PersonenkontenAllAccountsBothAccounts.csv'
         directory = os.path.dirname(path1)
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-
-        # Schreibe in die CSV-Datei
+        # Write to the CSV file
         with open(path1, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['Konto-Nr','Name','Straße','PLZ','Ort','Land','UID-Nummer', 'E-Mail','Webseite', 'Phone','IBAN','Zahlungsziel','Skonto','Skontotage']
+            fieldnames = ['Konto-Nr', 'Name', 'Straße', 'PLZ', 'Ort', 'Land', 'UID-Nummer', 'E-Mail', 'Webseite',
+                          'Phone', 'IBAN', 'Zahlungsziel', 'Skonto', 'Skontotage']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
             for customer in customers:
+                # Write row for receivable account
                 writer.writerow({
                     'Konto-Nr': customer.property_account_receivable_id.code if customer.property_account_receivable_id else '',
                     'Name': customer.name if customer.name else '',
@@ -123,24 +123,42 @@ class AccountBmdExport(models.TransientModel):
                     'Webseite': customer.website if customer.website else '',
                     'UID-Nummer': customer.vat if customer.vat else '',
                     'Land': customer.state_id.code if customer.state_id else '',
-
-
-
+                })
+                # Write row for payable account
+                writer.writerow({
+                    'Konto-Nr': customer.property_account_payable_id.code if customer.property_account_payable_id else '',
+                    'Name': customer.name if customer.name else '',
+                    'E-Mail': customer.email if customer.email else '',
+                    'Phone': customer.phone if customer.phone else '',
+                    'Ort': customer.city if customer.city else '',
+                    'Straße': customer.street if customer.street else '',
+                    'PLZ': customer.zip if customer.zip else '',
+                    'Webseite': customer.website if customer.website else '',
+                    'UID-Nummer': customer.vat if customer.vat else '',
+                    'Land': customer.state_id.code if customer.state_id else '',
                 })
 
         return True
 
     def export_buchungszeilen(self):
         print("==============> Generating csv Files for BMD export")
+        gkonto = ""
 
         # date formatter from yyyy-mm-dd to dd.mm.yyyy
         def date_formatter(date):
             return date.strftime('%d.%m.%Y')
 
+        buchsymbol_mapping = {
+            'sale': 'AR',
+            'purchase': 'ER',
+            'general': 'SO',
+            'cash': 'KA',
+            'bank': 'BK'
+        }
         journal_items = self.env['account.move.line'].search([])
         result_data = []
         for line in journal_items:
-            # print(line)
+            print(line)
             konto = line.account_id.code
             prozent = line.tax_ids.amount
             steuer = line.price_total - line.price_subtotal
@@ -174,22 +192,32 @@ class AccountBmdExport(models.TransientModel):
                 buchcode = 2
                 habenBuchung = True
 
+            buchsymbol = buchsymbol_mapping.get(line.journal_id.type, '')
+
             if habenBuchung:
                 betrag = -line.credit  # Haben Buchungen müssen negativ sein
-                for invoice_line in line.move_id.invoice_line_ids:  # runs through all invoice lines to find the right "Gegenkonto"
-                    if invoice_line.debit > 0:
-                        gkonto = invoice_line.account_id.code
             else:
                 betrag = line.debit
+
+            if buchsymbol == 'ER':
+                gkonto = line.partner_id.property_account_payable_id.code
+            elif buchsymbol == 'AR':
+                gkonto = line.partner_id.property_account_receivable_id.code
+            else:
                 for invoice_line in line.move_id.invoice_line_ids:  # runs through all invoice lines to find the right "Gegenkonto"
                     if invoice_line.credit > 0:
                         gkonto = invoice_line.account_id.code
 
+            #switch Soll Haben bei Ausgangsrechnungen
+            if buchsymbol == 'AR':
+                temp_gkonto = gkonto
+                gkonto = konto
+                konto = temp_gkonto
+
+            buchungszeile = line.move_id
+
             # TODO: Add the correct values for the following fields
             satzart = 0
-            buchsymbol = "ER"
-            kost = 10
-            filiale = ""
 
             result_data.append({
                 'satzart': satzart,
@@ -203,11 +231,17 @@ class AccountBmdExport(models.TransientModel):
                 'prozent': prozent,
                 'steuer': steuer,
                 'text': text,
-                'satzart': satzart,
                 'buchsymbol': buchsymbol,
-                'kost': kost,
-                'filiale': filiale
+                'buchungszeile': buchungszeile,
             })
+
+        # Remove tax lines and haben buchung
+
+        for data in result_data:
+            for check_data in result_data:
+                if (data['buchsymbol'] == 'ER' or data['buchsymbol'] == 'AR') and data['buchungszeile'] == check_data['buchungszeile'] and data['prozent'] and not check_data['prozent']:
+                    result_data.remove(check_data)
+
 
         save_path = self.path + '/Buchungszeilen.csv'
         directory = os.path.dirname(save_path)
@@ -216,12 +250,25 @@ class AccountBmdExport(models.TransientModel):
 
         with open(save_path, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['satzart', 'konto', 'gKonto', 'belegnr', 'belegdatum', 'steuercode', 'buchcode', 'betrag',
-                          'prozent', 'steuer', 'text', 'satzart', 'buchsymbol', 'kost', 'filiale']
+                          'prozent', 'steuer', 'text', 'buchsymbol', 'buchungszeile']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
             for row in result_data:
-                writer.writerow(row)
+                writer.writerow({
+                    'satzart': row['satzart'],
+                    'konto': row['konto'],
+                    'gKonto': row['gKonto'],
+                    'belegnr': row['belegnr'],
+                    'belegdatum': row['belegdatum'],
+                    'steuercode': row['steuercode'],
+                    'buchcode': row['buchcode'],
+                    'betrag': row['betrag'],
+                    'prozent': row['prozent'],
+                    'steuer': row['steuer'],
+                    'text': row['text'],
+                    'buchsymbol': row['buchsymbol'],
+                })
 
         print("==============> Done")
 
