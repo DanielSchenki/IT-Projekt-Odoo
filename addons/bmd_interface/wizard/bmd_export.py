@@ -1,5 +1,6 @@
 import csv
 import re
+import datetime
 import tkinter as tk
 from tkinter import filedialog
 import os
@@ -158,19 +159,13 @@ class AccountBmdExport(models.TransientModel):
         journal_items = self.env['account.move.line'].search([])
         result_data = []
         for line in journal_items:
-            print(line)
+            belegdatum = line.date
+            if self.period_date_from > belegdatum or belegdatum > self.period_date_to:
+                continue
+            belegdatum = date_formatter(belegdatum)
             konto = line.account_id.code
             prozent = line.tax_ids.amount
             steuer = line.price_total - line.price_subtotal
-            if line.move_id.invoice_date == False:
-                belegdatum = ""
-            else:
-                belegdatum = date_formatter(line.move_id.date)
-
-            if line.move_id.date == False:
-                buchungsdatum = ""
-            else:
-                buchungsdatum = date_formatter(line.move_id.date)
             belegnr = line.move_id.name
             text = line.name
             if steuer != 0 and line.tax_ids.name != False:
