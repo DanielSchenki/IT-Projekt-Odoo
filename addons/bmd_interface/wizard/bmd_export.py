@@ -79,7 +79,9 @@ class AccountBmdExport(models.TransientModel):
 
             writer.writeheader()
             for row in result_data:
-                writer.writerow(row)
+                cleaned_row = {key: value.replace('\n', ' ') if isinstance(value, str) else value for key, value in
+                               row.items()}
+                writer.writerow(cleaned_row)
 
         window.destroy()
 
@@ -245,25 +247,15 @@ class AccountBmdExport(models.TransientModel):
 
         with open(save_path, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['satzart', 'konto', 'gKonto', 'belegnr', 'belegdatum', 'steuercode', 'buchcode', 'betrag',
-                          'prozent', 'steuer', 'text', 'buchsymbol', 'buchungszeile']
+                          'prozent', 'steuer', 'text', 'buchsymbol']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
             for row in result_data:
-                writer.writerow({
-                    'satzart': row['satzart'],
-                    'konto': row['konto'],
-                    'gKonto': row['gKonto'],
-                    'belegnr': row['belegnr'],
-                    'belegdatum': row['belegdatum'],
-                    'steuercode': row['steuercode'],
-                    'buchcode': row['buchcode'],
-                    'betrag': row['betrag'],
-                    'prozent': row['prozent'],
-                    'steuer': row['steuer'],
-                    'text': row['text'],
-                    'buchsymbol': row['buchsymbol'],
-                })
+                cleaned_row = {key: value.replace('\n', ' ') if isinstance(value, str) else value for key, value in
+                               row.items()}
+                del cleaned_row['buchungszeile']
+                writer.writerow(cleaned_row)
 
         print("==============> Done")
 
