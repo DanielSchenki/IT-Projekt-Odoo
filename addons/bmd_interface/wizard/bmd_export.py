@@ -90,7 +90,6 @@ class AccountBmdExport(models.TransientModel):
     @api.model
     def selectPath(self):
         window = tk.Tk()
-        print("selectPath")
         self.path = filedialog.askdirectory()
         window.destroy()
 
@@ -165,27 +164,11 @@ class AccountBmdExport(models.TransientModel):
             if self.period_date_from > belegdatum or belegdatum > self.period_date_to:
                 continue
             belegdatum = date_formatter(belegdatum)
-            if line.account_id.code == False:
-                 continue
-            else:
-                konto = line.account_id.code[:10]
-            if line.tax_ids.amount == False:
-                prozent = 0
-            else:
-                prozent = round(line.tax_ids.amount,3)
-
-            if line.price_total == False or line.price_subtotal == False:
-                steuer = 0
-            else:
-                steuer = round((line.price_total - line.price_subtotal),2)
-            if line.move_id.name == False:
-                belegnr = ""
-            else:
-                belegnr = line.move_id.name[:20]
-            if line.name == False:
-                text = ""
-            else:
-                text = line.name[:255]
+            konto = line.account_id.code
+            prozent = line.tax_ids.amount
+            steuer = line.price_total - line.price_subtotal
+            belegnr = line.move_id.name
+            text = line.name
             if steuer != 0 and line.tax_ids.name != False:
                 steuercode_before_cut = line.tax_ids.name
                 # Test String
@@ -194,9 +177,9 @@ class AccountBmdExport(models.TransientModel):
                 if re.search(pattern, steuercode_before_cut):
                     steuercode = int(steuercode_before_cut[-3:])
                 else:
-                    steuercode = "002" #Default
+                    steuercode = "002"
             else:
-                steuercode = "002" #Default
+                steuercode = "002"
 
             if line.debit > 0:
                 buchcode = 1
@@ -207,12 +190,10 @@ class AccountBmdExport(models.TransientModel):
 
             buchsymbol = buchsymbol_mapping.get(line.journal_id.type, '')
 
-
             if habenBuchung:
-                betrag = round(-line.credit,2)  # Haben Buchungen müssen negativ sein
+                betrag = -line.credit  # Haben Buchungen müssen negativ sein
             else:
-                betrag = round(line.debit,2)
-
+                betrag = line.debit
 
             if buchsymbol == 'ER':
                 gkonto = line.partner_id.property_account_payable_id.code
@@ -265,7 +246,7 @@ class AccountBmdExport(models.TransientModel):
 
         with open(save_path, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['satzart', 'konto', 'gKonto', 'belegnr', 'belegdatum', 'steuercode', 'buchcode', 'betrag',
-                          'prozent', 'steuer', 'text', 'buchsymbol']
+                          'prozent', 'steuer', 'text', 'buchsymbol', 'buchungszeile']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
