@@ -5,37 +5,23 @@ import tkinter as tk
 from tkinter import filedialog
 import os
 import io
+import zipfile
 
 from odoo import models, fields, api, http
+from odoo.http import request
 
 class CsvDownloadController(http.Controller):
     @http.route('/download', type='http', auth="user")
     def download_csv(self):
 
-        '''result_data = []
+        zipContent = request.env['account.bmd'].combineToZip()
 
-        test_string = 'test'
-        result_data.append({
-            'Konto-Nr': test_string,
-            'Bezeichnung': test_string
-        })'''
-
-        zip_buffer = io.BytesIO()
-
-        buffer = io.StringIO()
-        writer = csv.writer(buffer, delimiter=';')
-        header = ['Konto-Nr', 'Bezeichnung']
-        writer.writerow(header)
-        writer.writerow(["420", "file1"])
-
-
-
-        #Resets the buffer to the beginning
-        buffer.seek(0)
-
-        response = http.request.make_response(buffer.getvalue(), [('Content-Type', 'text/csv'), ('Content-Disposition', 'attachment; filename="test.csv"')])
-
-        print("Sending CSV")
+        # Return the ZIP file
+        response = http.request.make_response(zipContent.getvalue(),
+             headers=[
+                 ('Content-Type', 'application/zip'),
+                 ('Content-Disposition', 'attachment; filename="export.zip"')
+             ])
         return response
 
 
@@ -176,10 +162,6 @@ class AccountBmdExport(models.TransientModel):
 
     def export_buchungszeilen(self):
         print("==============> Generating csv Files for BMD export")
-
-        downloadController = CsvDownloadController()
-        downloadController.download_csv()
-
         gkonto = ""
 
         # date formatter from yyyy-mm-dd to dd.mm.yyyy
@@ -197,8 +179,8 @@ class AccountBmdExport(models.TransientModel):
         result_data = []
         for line in journal_items:
             belegdatum = line.date
-            if self.period_date_from > belegdatum or belegdatum > self.period_date_to:
-                continue
+            '''if self.period_date_from > belegdatum or belegdatum > self.period_date_to:
+                continue'''
             belegdatum = date_formatter(belegdatum)
             konto = line.account_id.code
             prozent = line.tax_ids.amount
@@ -275,15 +257,12 @@ class AccountBmdExport(models.TransientModel):
                     result_data.remove(check_data)
 
 
-        save_path = self.path + '/Buchungszeilen.csv'
-        directory = os.path.dirname(save_path)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
 
-        with open(save_path, 'w', newline='', encoding='utf-8') as csvfile:
+            csvBuffer = io.StringIO()
+            writer = csv.writer(csvBuffer, delimiter=';')
             fieldnames = ['satzart', 'konto', 'gKonto', 'belegnr', 'belegdatum', 'steuercode', 'buchcode', 'betrag',
                           'prozent', 'steuer', 'text', 'buchsymbol', 'buchungszeile']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+            writer = csv.DictWriter(csvBuffer, fieldnames=fieldnames, delimiter=';')
 
             writer.writeheader()
             for row in result_data:
@@ -292,12 +271,36 @@ class AccountBmdExport(models.TransientModel):
                 del cleaned_row['buchungszeile']
                 writer.writerow(cleaned_row)
 
+
         print("==============> Done")
+        return csvBuffer.getvalue()
 
 
     def execute(self):
-        self.selectPath()
+        print("==============> Executing BMD export")
+        action = {
+            'type': 'ir.actions.act_url',
+            'url': '/download',
+            'target': 'self',
+        }
+        print("==============> Done")
+        return action
+        '''self.selectPath()
         self.export_account()
         self.export_customers()
         self.export_buchungszeilen()
-        return True
+        return True'''
+
+
+    def combineToZip(self):
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            '''self.selectPath()
+            self.export_account()
+            self.export_customers()'''
+            entryContent = self.export_buchungszeilen()
+            zip_file.writestr(f'Buchungszeilen.csv', entryContent)
+
+        zip_buffer.seek(0)
+
+        return zip_buffer
