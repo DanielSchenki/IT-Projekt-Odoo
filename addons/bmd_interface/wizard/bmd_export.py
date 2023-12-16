@@ -4,8 +4,40 @@ import datetime
 import tkinter as tk
 from tkinter import filedialog
 import os
+import io
 
-from odoo import models, fields, api
+from odoo import models, fields, api, http
+
+class CsvDownloadController(http.Controller):
+    @http.route('/download', type='http', auth="user")
+    def download_csv(self):
+
+        '''result_data = []
+
+        test_string = 'test'
+        result_data.append({
+            'Konto-Nr': test_string,
+            'Bezeichnung': test_string
+        })'''
+
+        zip_buffer = io.BytesIO()
+
+        buffer = io.StringIO()
+        writer = csv.writer(buffer, delimiter=';')
+        header = ['Konto-Nr', 'Bezeichnung']
+        writer.writerow(header)
+        writer.writerow(["420", "file1"])
+
+
+
+        #Resets the buffer to the beginning
+        buffer.seek(0)
+
+        response = http.request.make_response(buffer.getvalue(), [('Content-Type', 'text/csv'), ('Content-Disposition', 'attachment; filename="test.csv"')])
+
+        print("Sending CSV")
+        return response
+
 
 
 class AccountBmdExport(models.TransientModel):
@@ -144,6 +176,10 @@ class AccountBmdExport(models.TransientModel):
 
     def export_buchungszeilen(self):
         print("==============> Generating csv Files for BMD export")
+
+        downloadController = CsvDownloadController()
+        downloadController.download_csv()
+
         gkonto = ""
 
         # date formatter from yyyy-mm-dd to dd.mm.yyyy
